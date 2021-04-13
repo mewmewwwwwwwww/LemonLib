@@ -1,6 +1,7 @@
 package onelemonyboi.lemonlib.rewards;
 
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.text.Color;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -42,98 +43,65 @@ public class PatreonRewards {
      */
 
     public static void PatreonRewardsHandling(TickEvent.PlayerTickEvent event) {
-        // TODO: CREATE LIBRARY AND: ADD THIS CODE TO IT AND START WORK ON LONG FLUID HANDLING
-        // TODO: LONG FLUID HANDLING CHECKLIST: FLUIDSTACK, FLUIDHANDLER, AND IFLUIDTANK?
+        Color[] rainbowArray = {color("E40300"), color("FF8D00"), color("FFEE00"), color("008121"), color("004BFF"), color("750088")};
+        Color[] transArray = {color("59D0FA"), color("F5ABBA"), color("FFFFFF"), color("F5ABBA"), color("59D0FA")};
+        Color[] biArray = {color("D70071"), color("9C4E98"), color("0035AA")};
+        Color[] lesbianArray = {color("D62A00"), color("FF9B56"), color("FFFFFF"), color("D461A6"), color("A40062")};
+        Color[] asexualArray = {color("000000"), color("A4A4A4"), color("FFFFFF"), color("810081")};
+        Color[] panArray = {color("FF1C8D"), color("FFD900"), color("1CB2FF")};
+        Color[] queerArray = {color("B77EDD"), color("FFFFFF"), color("48821D")};
+        Color[] nonBinaryArray = {color("FFF530"), color("FFFFFF"), color("9E58D2"), color("282828")};
 
-        TextFormatting[] rainbowArray = {TextFormatting.RED, TextFormatting.GOLD, TextFormatting.YELLOW, TextFormatting.GREEN, TextFormatting.BLUE, TextFormatting.LIGHT_PURPLE, TextFormatting.DARK_BLUE};
-        TextFormatting[] transArray = {TextFormatting.RED, TextFormatting.AQUA, TextFormatting.WHITE, TextFormatting.AQUA, TextFormatting.RED};
-        TextFormatting[] biArray = {TextFormatting.LIGHT_PURPLE, TextFormatting.DARK_PURPLE, TextFormatting.BLUE};
-        TextFormatting[] lesbianArray = {TextFormatting.RED, TextFormatting.GOLD, TextFormatting.WHITE, TextFormatting.LIGHT_PURPLE, TextFormatting.DARK_PURPLE};
-        TextFormatting[] asexualArray = {TextFormatting.BLACK, TextFormatting.GRAY, TextFormatting.WHITE, TextFormatting.LIGHT_PURPLE};
-        TextFormatting[] panArray = {TextFormatting.LIGHT_PURPLE, TextFormatting.GOLD, TextFormatting.AQUA};
-        TextFormatting[] queerArray = {TextFormatting.LIGHT_PURPLE, TextFormatting.WHITE, TextFormatting.DARK_GREEN};
-        TextFormatting[] nonBinaryArray = {TextFormatting.YELLOW, TextFormatting.WHITE, TextFormatting.DARK_PURPLE, TextFormatting.BLACK}; // TODO: FINISH THIS
         String name = event.player.getCustomName() == null ? event.player.getGameProfile().getName() : event.player.getCustomName().getUnformattedComponentText();
         IFormattableTextComponent iFormattableTextComponent = new StringTextComponent(name);
         String type = PatreonJSON.REWARD_MAP.getOrDefault(event.player.getGameProfile().getName(), "No Value");
         if (!type.equals("No Value")) {
-            if (type.equals("Rainbow")) {
-                iFormattableTextComponent = new StringTextComponent("");
-                int count = 0;
-                for (Character c : name.toCharArray()) {
-                    IFormattableTextComponent tempFTC = new StringTextComponent(c.toString()).mergeStyle(rainbowArray[count]);
-                    iFormattableTextComponent.appendSibling(tempFTC);
-                    count = count == 6 ? 0 : count + 1;
-                }
-            }
-            else if (type.equals("TransFlag")) {
-                iFormattableTextComponent = new StringTextComponent("");
-                int count = 0;
-                for (Character c : name.toCharArray()) {
-                    IFormattableTextComponent tempFTC = new StringTextComponent(c.toString()).mergeStyle(transArray[count]);
-                    iFormattableTextComponent.appendSibling(tempFTC);
-                    count = count == 4 ? 0 : count + 1;
-                }
-            }
-            else if (type.equals("BiFlag")) {
-                iFormattableTextComponent = new StringTextComponent("");
-                int count = 0;
-                for (Character c : name.toCharArray()) {
-                    IFormattableTextComponent tempFTC = new StringTextComponent(c.toString()).mergeStyle(biArray[count]);
-                    iFormattableTextComponent.appendSibling(tempFTC);
-                    count = count == 2 ? 0 : count + 1;
-                }
-            }
-            else if (type.equals("LesbianFlag")) {
-                iFormattableTextComponent = new StringTextComponent("");
-                int count = 0;
-                for (Character c : name.toCharArray()) {
-                    IFormattableTextComponent tempFTC = new StringTextComponent(c.toString()).mergeStyle(lesbianArray[count]);
-                    iFormattableTextComponent.appendSibling(tempFTC);
-                    count = count == 4 ? 0 : count + 1;
-                }
-            }
-            else if (type.equals("AsexualFlag")) {
-                iFormattableTextComponent = new StringTextComponent("");
-                int count = 0;
-                for (Character c : name.toCharArray()) {
-                    IFormattableTextComponent tempFTC = new StringTextComponent(c.toString()).mergeStyle(asexualArray[count]);
-                    iFormattableTextComponent.appendSibling(tempFTC);
-                    count = count == 3 ? 0 : count + 1;
-                }
-            }
-            else if (type.equals("PansexualFlag")) {
-                iFormattableTextComponent = new StringTextComponent("");
-                int count = 0;
-                for (Character c : name.toCharArray()) {
-                    IFormattableTextComponent tempFTC = new StringTextComponent(c.toString()).mergeStyle(panArray[count]);
-                    iFormattableTextComponent.appendSibling(tempFTC);
-                    count = count == 2 ? 0 : count + 1;
-                }
-            }
-            else if (type.equals("GenderqueerFlag")) {
-                iFormattableTextComponent = new StringTextComponent("");
-                int count = 0;
-                for (Character c : name.toCharArray()) {
-                    IFormattableTextComponent tempFTC = new StringTextComponent(c.toString()).mergeStyle(queerArray[count]);
-                    iFormattableTextComponent.appendSibling(tempFTC);
-                    count = count == 2 ? 0 : count + 1;
-                }
-            }
-            else if (type.equals("NonBinaryFlag")) {
-                iFormattableTextComponent = new StringTextComponent("");
-                int count = 0;
-                for (Character c : name.toCharArray()) {
-                    IFormattableTextComponent tempFTC = new StringTextComponent(c.toString()).mergeStyle(nonBinaryArray[count]);
-                    iFormattableTextComponent.appendSibling(tempFTC);
-                    count = count == 3 ? 0 : count + 1;
-                }
-            }
-            else {
-                iFormattableTextComponent.mergeStyle(TextFormatting.fromColorIndex(Integer.parseInt(type)));
+            switch (type) {
+                case "Rainbow":
+                    iFormattableTextComponent = formattingSetter(name, rainbowArray);
+                    break;
+                case "TransFlag":
+                    iFormattableTextComponent = formattingSetter(name, transArray);
+                    break;
+                case "BiFlag":
+                    iFormattableTextComponent = formattingSetter(name, biArray);
+                    break;
+                case "LesbianFlag":
+                    iFormattableTextComponent = formattingSetter(name, lesbianArray);
+                    break;
+                case "AsexualFlag":
+                    iFormattableTextComponent = formattingSetter(name, asexualArray);
+                    break;
+                case "PanFlag":
+                    iFormattableTextComponent = formattingSetter(name, panArray);
+                    break;
+                case "QueerFlag":
+                    iFormattableTextComponent = formattingSetter(name, queerArray);
+                    break;
+                case "NonBinaryFlag":
+                    iFormattableTextComponent = formattingSetter(name, nonBinaryArray);
+                    break;
+                default:
+                    iFormattableTextComponent.setStyle(iFormattableTextComponent.getStyle().setColor(Color.fromHex(type)));
+                    break;
             }
         }
         event.player.setCustomName(iFormattableTextComponent);
         ObfuscationReflectionHelper.setPrivateValue(PlayerEntity.class, event.player, iFormattableTextComponent, "displayname");
+    }
+
+    public static IFormattableTextComponent formattingSetter(String name, Color[] colors) {
+        IFormattableTextComponent iFormattableTextComponent = new StringTextComponent("");
+        int count = 0;
+        for (Character c : name.toCharArray()) {
+            IFormattableTextComponent tempFTC = new StringTextComponent(c.toString()).setStyle(iFormattableTextComponent.getStyle().setColor(colors[count]));
+            iFormattableTextComponent.appendSibling(tempFTC);
+            count = count == colors.length - 1 ? 0 : count + 1;
+        }
+        return iFormattableTextComponent;
+    }
+
+    public static Color color(String string) {
+        return Color.fromHex("#".concat(string));
     }
 }

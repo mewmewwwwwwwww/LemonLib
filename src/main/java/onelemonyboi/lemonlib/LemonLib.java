@@ -5,8 +5,11 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import onelemonyboi.lemonlib.rewards.PatreonRewards;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import static net.minecraftforge.common.MinecraftForge.EVENT_BUS;
 
 @Mod(LemonLib.MOD_ID)
 public class LemonLib {
@@ -19,6 +22,7 @@ public class LemonLib {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
+        EVENT_BUS.addListener(PatreonRewards::PatreonRewardsHandling);
     }
 
     private void setup(final FMLCommonSetupEvent event)
