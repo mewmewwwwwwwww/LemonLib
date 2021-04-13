@@ -1,12 +1,11 @@
 {
   "required": true,
-  "package": "com.example.examplemod.mixin",
+  "package": "onelemonyboi.lemonlib.mixin",
   "compatibilityLevel": "JAVA_8",
-  "refmap": "examplemod.refmap.json",
+  "refmap": "lemonlib.refmap.json",
   "mixins": [
   ],
   "client":[
-    "ExampleMixin"
   ],
   "injectors": {
     "defaultRequire": 1
