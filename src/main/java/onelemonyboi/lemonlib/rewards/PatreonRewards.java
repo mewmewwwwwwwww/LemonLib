@@ -52,7 +52,7 @@ public class PatreonRewards {
         Color[] queerArray = {color("B77EDD"), color("FFFFFF"), color("48821D")};
         Color[] nonBinaryArray = {color("FFF530"), color("FFFFFF"), color("9E58D2"), color("282828")};
 
-        String name = event.player.getCustomName() == null ? event.player.getGameProfile().getName() : event.player.getCustomName().getUnformattedComponentText();
+        String name = event.player.getCustomName() == null || event.player.getCustomName().getString().equals("") ? event.player.getGameProfile().getName() : event.player.getCustomName().getUnformattedComponentText();
         IFormattableTextComponent iFormattableTextComponent = new StringTextComponent(name);
         String type = PatreonJSON.REWARD_MAP.getOrDefault(event.player.getGameProfile().getName(), "No Value");
         if (!type.equals("No Value")) {
@@ -85,9 +85,9 @@ public class PatreonRewards {
                     iFormattableTextComponent.setStyle(iFormattableTextComponent.getStyle().setColor(Color.fromHex(type)));
                     break;
             }
+            event.player.setCustomName(iFormattableTextComponent);
+            ObfuscationReflectionHelper.setPrivateValue(PlayerEntity.class, event.player, iFormattableTextComponent, "displayname");
         }
-        event.player.setCustomName(iFormattableTextComponent);
-        ObfuscationReflectionHelper.setPrivateValue(PlayerEntity.class, event.player, iFormattableTextComponent, "displayname");
     }
 
     public static IFormattableTextComponent formattingSetter(String name, Color[] colors) {
