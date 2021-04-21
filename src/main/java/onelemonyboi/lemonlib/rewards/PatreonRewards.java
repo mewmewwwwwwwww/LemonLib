@@ -85,7 +85,7 @@ public class PatreonRewards {
                     iFormattableTextComponent.setStyle(iFormattableTextComponent.getStyle().setColor(color(type)));
                     break;
             }
-            final java.util.Collection<IFormattableTextComponent> suffixes = new java.util.LinkedList<>();
+            java.util.Collection<IFormattableTextComponent> suffixes = new java.util.LinkedList<>();
             iFormattableTextComponent = suffixes.stream().reduce(iFormattableTextComponent, IFormattableTextComponent::appendSibling);
             event.player.setCustomName(iFormattableTextComponent);
             ObfuscationReflectionHelper.setPrivateValue(PlayerEntity.class, event.player, iFormattableTextComponent, "displayname");
