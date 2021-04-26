@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 
 // Credit: Ellpeck - https://github.com/Ellpeck/NaturesAura/blob/main/src/main/java/de/ellpeck/naturesaura/blocks/tiles/TileEntityImpl.java
 
-public abstract class TileBase extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
+public abstract class TileBase extends TileEntity implements ITickableTileEntity {
     public TileBase(TileEntityType<?> tileEntityTypeIn) {
         super(tileEntityTypeIn);
     }

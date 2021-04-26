@@ -19,7 +19,7 @@ modId="lemonlib" #mandatory
 # The version number of the mod - there's a few well known ${} variables useable here or just hardcode it
 # ${file.jarVersion} will substitute the value of the Implementation-Version as read from the mod's JAR file metadata
 # see the associated build.gradle script for how to populate this completely automatically during a build
-version="1.0.0" #mandatory
+version="1.2.8" #mandatory
 # A display name for the mod
 displayName="Lemon Lib" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification <here>
@@ -49,24 +49,10 @@ ordering="NONE"
 # Side this dependency is applied on - BOTH, CLIENT or SERVER
 side="BOTH"
 # Here's another dependency
-[[dependencies.miniutilities]]
+[[dependencies.lemonlib]]
 modId="minecraft"
 mandatory=true
 # This version range declares a minimum of the current minecraft version up to but not including the next major version
 versionRange="[1.16.5,1.17)"
-ordering="NONE"
-side="BOTH"
-[[dependencies.miniutilities]]
-modId="curios"
-mandatory=true
-# This version range declares a minimum of the current minecraft version up to but not including the next major version
-versionRange="[1.16.5-4.0.5.0,)"
-ordering="NONE"
-side="BOTH"
-[[dependencies.miniutilities]]
-modId="ctm"
-mandatory=true
-# This version range declares a minimum of the current minecraft version up to but not including the next major version
-versionRange="[MC1.16.1-1.1.2.6,)"
 ordering="NONE"
 side="BOTH"

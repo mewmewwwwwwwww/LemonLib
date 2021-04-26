@@ -27,8 +27,6 @@ public class PatreonJSON {
                 try (JsonReader reader = new JsonReader(new InputStreamReader(url.openStream()))) {
                     Supporter[] supportersList = jsonParser.fromJson(reader, Supporter[].class);
                     for (Supporter supporter : supportersList) {
-                        LemonLib.LOGGER.debug(supporter.name);
-                        LemonLib.LOGGER.debug(supporter.color);
                         REWARD_MAP.put(supporter.name, supporter.color);
                     }
                 }

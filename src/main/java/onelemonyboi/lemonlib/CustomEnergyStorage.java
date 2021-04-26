@@ -45,15 +45,6 @@ public class CustomEnergyStorage extends EnergyStorage {
         setEnergy(nbt.getInt("energy"));
     }
 
-    public CompoundNBT write(CompoundNBT nbt, String name) {
-        nbt.putInt("energy_"+name, energy);
-        return nbt;
-    }
-
-    public void read(CompoundNBT nbt, String name) {
-        setEnergy(nbt.getInt("energy_"+name));
-    }
-
     @Override
     public boolean canExtract() {
         return this.canExtract;
@@ -64,33 +55,71 @@ public class CustomEnergyStorage extends EnergyStorage {
         return this.canReceive;
     }
 
-    public int internalConsumeEnergy(int consume) {
-        int oenergy = energy;
-        energy = Math.max(0, energy - consume);
-        return oenergy - energy;
+    public void setCanExtract(Boolean bool) {
+        this.canExtract = bool;
+    }
+
+    public void setCanReceive(Boolean bool) {
+        this.canReceive = bool;
+    }
+
+    public void setMaxExtract(Integer num) {
+        this.maxExtract = num;
+    }
+
+    public void setMaxRecieve(Integer num) {
+        this.maxReceive = num;
     }
 
     public int internalProduceEnergy(int produce) {
-        int oenergy = energy;
-        energy = Math.min(capacity, energy + produce);
-        return oenergy - energy;
+        int energyRecieved = Math.min(capacity - energy, Math.min(maxReceive, produce));
+        energy += energyRecieved;
+        return energyRecieved;
+    }
+
+    public int internalConsumeEnergy(int consume) {
+        int energyRecieved = Math.min(maxExtract, Math.min(energy, consume));
+        energy -= energyRecieved;
+        return energyRecieved;
+    }
+
+    public int simulateInternalProduceEnergy(int produce) {
+        return Math.min(capacity - energy, produce);
+    }
+
+    public int simulateInternalConsumeEnergy(int consume) {
+        return Math.min(maxExtract, Math.min(energy, consume));
     }
 
     public void setEnergy(int energy) {
         this.energy = energy;
     }
 
-    @Deprecated
     public void outputToSide(World world, BlockPos pos, Direction side, int max) {
         TileEntity te = world.getTileEntity(pos.offset(side));
-        if(te == null)
-            return;
+        if(te == null) {return;}
         LazyOptional<IEnergyStorage> opt = te.getCapability(CapabilityEnergy.ENERGY, side.getOpposite());
         IEnergyStorage ies = opt.orElse(null);
-        if(ies == null)
-            return;
-        int ext = this.extractEnergy(max, false);
-        this.receiveEnergy(ext - ies.receiveEnergy(ext, false), false);
+        if(ies == null) {return;}
+        int ext = this.internalConsumeEnergy(max);
+        int putBack = Math.max(0, ies.receiveEnergy(ext, false));
+        this.internalProduceEnergy(ext - putBack);
+    }
+
+    @Deprecated
+    @Override
+    public int receiveEnergy(int maxReceive, boolean simulate)
+    {
+        if (simulate) {return simulateInternalProduceEnergy(maxReceive);}
+        return internalProduceEnergy(maxReceive);
+    }
+
+    @Deprecated
+    @Override
+    public int extractEnergy(int maxExtract, boolean simulate)
+    {
+        if (simulate) {return simulateInternalConsumeEnergy(maxReceive);}
+        return internalConsumeEnergy(maxReceive);
     }
 
     @Override
