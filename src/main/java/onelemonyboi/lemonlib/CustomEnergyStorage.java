@@ -71,24 +71,26 @@ public class CustomEnergyStorage extends EnergyStorage {
         this.maxReceive = num;
     }
 
-    public int internalProduceEnergy(int produce) {
-        int energyRecieved = Math.min(capacity - energy, Math.min(maxReceive, produce));
+    // REWORKING
+
+    public int produceEnergy(int produce) {
+        int energyRecieved = Math.min(capacity - energy, produce);
         energy += energyRecieved;
         return energyRecieved;
     }
 
-    public int internalConsumeEnergy(int consume) {
-        int energyRecieved = Math.min(maxExtract, Math.min(energy, consume));
-        energy -= energyRecieved;
-        return energyRecieved;
+    public int consumeEnergy(int consume) {
+        int energyOutput = Math.min(energy, consume);
+        energy -= energyOutput;
+        return energyOutput;
     }
 
-    public int simulateInternalProduceEnergy(int produce) {
+    public int simulateProduceEnergy(int produce) {
         return Math.min(capacity - energy, produce);
     }
 
-    public int simulateInternalConsumeEnergy(int consume) {
-        return Math.min(maxExtract, Math.min(energy, consume));
+    public int simulateConsumeEnergy(int consume) {
+        return Math.min(energy, consume);
     }
 
     public void setEnergy(int energy) {
@@ -101,29 +103,167 @@ public class CustomEnergyStorage extends EnergyStorage {
         LazyOptional<IEnergyStorage> opt = te.getCapability(CapabilityEnergy.ENERGY, side.getOpposite());
         IEnergyStorage ies = opt.orElse(null);
         if(ies == null) {return;}
-        int ext = this.internalConsumeEnergy(max);
-        int putBack = Math.max(0, ies.receiveEnergy(ext, false));
-        this.internalProduceEnergy(ext - putBack);
+
+        int ext = this.consumeEnergy(max);
+        int putBack = ext - ies.receiveEnergy(ext, false);
+        this.produceEnergy(putBack);
+    }
+
+    public void inputFromSide(World world, BlockPos pos, Direction side, int max) {
+        TileEntity te = world.getTileEntity(pos.offset(side));
+        if(te == null) {return;}
+        LazyOptional<IEnergyStorage> opt = te.getCapability(CapabilityEnergy.ENERGY, side.getOpposite());
+        IEnergyStorage ies = opt.orElse(null);
+        if(ies == null) {return;}
+
+        int ext = ies.extractEnergy(max, false);
+        this.produceEnergy(ext);
     }
 
     @Deprecated
     @Override
-    public int receiveEnergy(int maxReceive, boolean simulate)
+    public int receiveEnergy(int recieve, boolean simulate)
     {
-        if (simulate) {return simulateInternalProduceEnergy(maxReceive);}
-        return internalProduceEnergy(maxReceive);
+        if (simulate) {return Math.min(capacity - energy, Math.min(maxReceive, recieve));}
+        int energyRecieved = Math.min(capacity - energy, Math.min(maxReceive, recieve));
+        energy += energyRecieved;
+        return energyRecieved;
     }
 
     @Deprecated
     @Override
-    public int extractEnergy(int maxExtract, boolean simulate)
+    public int extractEnergy(int extract, boolean simulate)
     {
-        if (simulate) {return simulateInternalConsumeEnergy(maxReceive);}
-        return internalConsumeEnergy(maxReceive);
+        if (simulate) {return Math.min(maxExtract, Math.min(energy, extract));}
+        int energyExtracted = Math.min(maxExtract, Math.min(energy, extract));
+        energy -= energyExtracted;
+        return energyExtracted;
     }
 
     @Override
     public String toString() {
         return getEnergyStored() + "/" + getMaxEnergyStored();
     }
+
+    public int machineConsume(int consume) {
+        int reset = this.maxExtract;
+        this.setMaxExtract(Integer.MAX_VALUE);
+        int returnVal = this.consumeEnergy(consume);
+        this.setMaxExtract(reset);
+        return returnVal;
+    }
+
+    public int machineProduce(int recieve) {
+        int reset = this.maxReceive;
+        this.setMaxRecieve(Integer.MAX_VALUE);
+        int returnVal = this.produceEnergy(recieve);
+        this.setMaxRecieve(reset);
+        return returnVal;
+    }
+
+    public Boolean checkedMachineConsume(int consume) {
+        if (this.simulateConsumeEnergy(consume) == consume) {
+            machineConsume(consume);
+            return true;
+        }
+        return false;
+    }
+
+    public Boolean checkedMachineProduce(int consume) {
+        if (this.simulateProduceEnergy(consume) == consume) {
+            machineProduce(consume);
+            return true;
+        }
+        return false;
+    }
 }
+
+/*
+public int produceEnergy(int produce) {
+        int energyRecieved = Math.min(capacity - energy, Math.min(maxReceive, produce));
+        energy += energyRecieved;
+        return energyRecieved;
+    }
+
+    public int consumeEnergy(int consume) {
+        int energyOutput = Math.min(maxExtract, Math.min(energy, consume));
+        energy -= energyOutput;
+        return energyOutput;
+    }
+
+    public int simulateProduceEnergy(int produce) {
+        return Math.min(capacity - energy, produce);
+    }
+
+    public int simulateConsumeEnergy(int consume) {
+        return Math.min(maxExtract, Math.min(energy, consume));
+    }
+
+    public int simulateCheckedProduceEnergy(int produce) {
+        return Math.min(capacity - energy, produce);
+    }
+
+    public int simulateCheckedConsumeEnergy(int consume) {
+        return Math.min(Integer.MAX_VALUE, Math.min(energy, consume));
+    }
+
+    public void setEnergy(int energy) {
+        this.energy = energy;
+    }
+
+    public void outputToSide(World world, BlockPos pos, Direction side, int max) {
+        TileEntity te = world.getTileEntity(pos.offset(side));
+        if(te == null) {return;}
+        LazyOptional<IEnergyStorage> opt = te.getCapability(CapabilityEnergy.ENERGY, side.getOpposite());
+        IEnergyStorage ies = opt.orElse(null);
+        if(ies == null) {return;}
+        int ext = this.consumeEnergy(max);
+        int putBack = Math.max(0, ies.receiveEnergy(ext, false));
+        this.produceEnergy(ext - putBack);
+    }
+
+    @Deprecated
+    @Override
+    public int receiveEnergy(int maxReceive, boolean simulate)
+    {
+        if (simulate) {return simulateProduceEnergy(maxReceive);}
+        return produceEnergy(maxReceive);
+    }
+
+    @Deprecated
+    @Override
+    public int extractEnergy(int maxExtract, boolean simulate)
+    {
+        if (simulate) {return simulateConsumeEnergy(maxReceive);}
+        return consumeEnergy(maxReceive);
+    }
+
+    @Override
+    public String toString() {
+        return getEnergyStored() + "/" + getMaxEnergyStored();
+    }
+
+    public int machineConsume(int consume) {
+        int reset = this.maxExtract;
+        this.setMaxExtract(Integer.MAX_VALUE);
+        int returnVal = this.consumeEnergy(consume);
+        this.setMaxExtract(reset);
+        return returnVal;
+    }
+
+    public int machineProduce(int recieve) {
+        int reset = this.maxReceive;
+        this.setMaxRecieve(Integer.MAX_VALUE);
+        int returnVal = this.produceEnergy(recieve);
+        this.setMaxRecieve(reset);
+        return returnVal;
+    }
+
+    public Boolean checkedMachineConsume(int consume) {
+        if (this.simulateConsumeEnergy(consume) == consume) {
+            machineConsume(consume);
+            return true;
+        }
+        return false;
+    }
+ */

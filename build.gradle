@@ -10,10 +10,6 @@ buildscript {
     }
 }
 
-plugins {
-    id "com.wynprice.cursemaven" version "2.1.5"
-}
-
 apply plugin: 'net.minecraftforge.gradle'
 
 version = "${mod_version}"
@@ -85,14 +81,16 @@ minecraft {
 
 repositories{
     maven {
-        // location of the maven that hosts JEI files
-        name = "Progwml6 maven"
-        url = "https://dvs1.progwml6.com/files/maven/"
+        name = "CF"
+        url = "https://minecraft.curseforge.com/api/maven/"
     }
     maven {
-        // location of a maven mirror for JEI files, as a fallback
-        name = "ModMaven"
-        url = "https://modmaven.k-4u.nl"
+        name = "C4"
+        url = "https://maven.theillusivec4.top/"
+    }
+    maven {
+        name = "Cursemaven"
+        url = "https://www.cursemaven.com/"
     }
     jcenter()
     mavenCentral()

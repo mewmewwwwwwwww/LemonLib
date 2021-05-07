@@ -44,13 +44,14 @@ public abstract class TileBase extends TileEntity implements ITickableTileEntity
     @Nullable
     @Override
     public SUpdateTileEntityPacket getUpdatePacket() {
-        return new SUpdateTileEntityPacket(this.getPos(), 21, getUpdateTag());
+        return new SUpdateTileEntityPacket(this.getPos(), 514, getUpdateTag());
     }
 
     @Override
     public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
         this.read(world.getBlockState(pkt.getPos()), pkt.getNbtCompound());
     }
+
     @Override
     public void handleUpdateTag(BlockState state, CompoundNBT tag) {
         this.read(state, tag);
