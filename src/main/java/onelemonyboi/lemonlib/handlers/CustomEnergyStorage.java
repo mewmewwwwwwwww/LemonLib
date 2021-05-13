@@ -1,4 +1,4 @@
-package onelemonyboi.lemonlib;
+package onelemonyboi.lemonlib.handlers;
 
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;

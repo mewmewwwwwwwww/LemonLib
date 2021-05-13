@@ -1,23 +1,14 @@
 package onelemonyboi.lemonlib.blocks;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
-import onelemonyboi.lemonlib.CustomEnergyStorage;
-
-import javax.annotation.Nullable;
-import java.util.stream.Stream;
+import onelemonyboi.lemonlib.handlers.CustomEnergyStorage;
 
 public abstract class EnergyTileBase extends TileBase {
     public final CustomEnergyStorage energy;
