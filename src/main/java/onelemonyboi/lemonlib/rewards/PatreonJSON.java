@@ -2,6 +2,7 @@ package onelemonyboi.lemonlib.rewards;
 
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
+import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import onelemonyboi.lemonlib.LemonLib;

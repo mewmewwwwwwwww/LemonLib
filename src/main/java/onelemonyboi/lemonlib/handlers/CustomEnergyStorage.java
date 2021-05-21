@@ -117,7 +117,8 @@ public class CustomEnergyStorage extends EnergyStorage {
         if(ies == null) {return;}
 
         int ext = ies.extractEnergy(max, false);
-        this.produceEnergy(ext);
+        int putBack = ext - this.produceEnergy(ext);
+        ies.receiveEnergy(putBack, false);
     }
 
     @Deprecated

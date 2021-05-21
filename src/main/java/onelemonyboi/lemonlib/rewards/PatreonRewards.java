@@ -5,7 +5,10 @@ import net.minecraft.util.text.Color;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
 public class PatreonRewards {
@@ -43,6 +46,10 @@ public class PatreonRewards {
      */
 
     public static void PatreonRewardsHandling(TickEvent.PlayerTickEvent event) {
+        if (event.side == LogicalSide.SERVER) {
+            return;
+        }
+
         Color[] rainbowArray = {color("E40300"), color("FF8D00"), color("FFEE00"), color("008121"), color("004BFF"), color("750088")};
         Color[] transArray = {color("59D0FA"), color("F5ABBA"), color("FFFFFF"), color("F5ABBA"), color("59D0FA")};
         Color[] biArray = {color("D70071"), color("9C4E98"), color("0035AA")};
