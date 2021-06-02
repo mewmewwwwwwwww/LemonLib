@@ -16,7 +16,7 @@ public abstract class EnergyTileBase extends TileBase {
 
     public EnergyTileBase(TileEntityType<?> tileEntityTypeIn, int cap, int receive, int extract) {
         super(tileEntityTypeIn);
-        energy = new CustomEnergyStorage(cap, receive, extract, receive == 0, extract == 0);
+        energy = new CustomEnergyStorage(cap, receive, extract, receive != 0, extract != 0);
         lazyEnergy = LazyOptional.of(() -> energy);
     }
 
