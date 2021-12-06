@@ -21,7 +21,7 @@ public class PatreonJSON {
     }
 
     private static void load() {
-        Thread thread = new Thread(() -> {
+        Minecraft.getInstance().runImmediately(() -> {
             Gson jsonParser = new Gson();
             try {
                 URL url = new URL("https://raw.githubusercontent.com/OneLemonyBoi/LemonLib/main/supporters.json");
@@ -35,9 +35,6 @@ public class PatreonJSON {
                 e.printStackTrace();
             }
         });
-
-        thread.setName(LemonLib.MOD_ID + "_supporter_downloader");
-        thread.start();
     }
 
     private static class Supporter {

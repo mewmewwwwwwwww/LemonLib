@@ -177,4 +177,8 @@ public class CustomEnergyStorage extends EnergyStorage {
         }
         return false;
     }
+
+    public CustomEnergyStorage copy() {
+        return new CustomEnergyStorage(capacity, maxReceive, maxExtract, energy);
+    }
 }

@@ -73,4 +73,8 @@ public class MUItemStackHandler implements IItemHandler, IItemHandlerModifiable,
     public boolean canExtractItem(int slot, int amount) {
         return true;
     }
+
+    public MUItemStackHandler copy() {
+        return new MUItemStackHandler(getSlots());
+    }
 }

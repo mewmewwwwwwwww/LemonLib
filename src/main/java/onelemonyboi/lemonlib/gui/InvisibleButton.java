@@ -1,4 +1,4 @@
-package onelemonyboi.lemonlib.blocks;
+package onelemonyboi.lemonlib.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.util.text.ITextComponent;
