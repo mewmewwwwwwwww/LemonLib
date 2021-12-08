@@ -21,6 +21,7 @@ import onelemonyboi.lemonlib.trait.Trait;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 @UtilityClass
 public class BlockTraits {
@@ -39,17 +40,15 @@ public class BlockTraits {
     }
 
     public static class TileEntityTrait<T extends TileEntity> extends Trait {
-        private final Class<? extends T> tileClass;
-        private final Object[] args;
+        private final Function<Block, T> function;
 
-        public TileEntityTrait(Class<? extends T> tileClass, Object... args) {
-            this.tileClass = tileClass;
-            this.args = args;
+        public TileEntityTrait(Function<Block, T> function) {
+            this.function = function;
         }
 
         @SneakyThrows
-        public T createTileEntity() {
-            return tileClass.getDeclaredConstructor().newInstance(args);
+        public T createTileEntity(Block block) {
+            return function.apply(block);
         }
     }
 

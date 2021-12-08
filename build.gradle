@@ -10,6 +10,10 @@ buildscript {
     }
 }
 
+plugins {
+    id 'maven-publish'
+}
+
 apply plugin: 'net.minecraftforge.gradle'
 
 version = "${mod_version}"
@@ -136,3 +140,17 @@ mixin {
 }
 
 jar.finalizedBy('reobfJar')
+
+publishing {
+    repositories {
+        maven {
+            url "https://mymavenrepo.com/repo/3pEVgYQm4PZO0Xtz9Za3/"
+        }
+    }
+
+    publications {
+        maven(MavenPublication) {
+            from components.java
+        }
+    }
+}

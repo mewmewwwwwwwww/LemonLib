@@ -1,11 +1,13 @@
 package onelemonyboi.lemonlib.trait.block;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.state.Property;
 import net.minecraft.tileentity.TileEntity;
 import onelemonyboi.lemonlib.trait.behaviour.Behaviour;
 
 import java.util.Map;
+import java.util.function.Function;
 
 public class BlockBehaviour extends Behaviour {
     public static class Builder extends Behaviour.Builder<BlockBehaviour, Builder> {
@@ -25,8 +27,8 @@ public class BlockBehaviour extends Behaviour {
             return this.with(new BlockTraits.BlockRenderTypeTrait(BlockRenderType.ENTITYBLOCK_ANIMATED));
         }
 
-        public Builder tileEntity(Class<? extends TileEntity> tileEntityType, Object... args) {
-            return this.with(new BlockTraits.TileEntityTrait<>(tileEntityType, args));
+        public <T extends TileEntity> Builder tileEntity(Function<Block, T> function) {
+            return this.with(new BlockTraits.TileEntityTrait<T>(function));
         }
 
         public Builder rotation(BlockTraits.RotationType rotation) {
