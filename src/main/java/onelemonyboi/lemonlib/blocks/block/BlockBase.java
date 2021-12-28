@@ -1,5 +1,6 @@
 package onelemonyboi.lemonlib.blocks.block;
 
+import lombok.var;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -28,14 +29,26 @@ public class BlockBase extends Block implements IHasBehaviour {
     BlockBehaviour behaviour;
 
     public BlockBase(AbstractBlock.Properties properties, BlockBehaviour behaviour) {
-        super(properties);
+        super(tweak(behaviour, properties));
         this.behaviour = behaviour;
+
+        StateContainer.Builder<Block, BlockState> builder = new StateContainer.Builder<>(this);
+        this.fillStateContainer(builder);
+        this.stateContainer = builder.createStateContainer(Block::getDefaultState, BlockState::new);
+        this.setDefaultState(defineDefaultState());
 
         behaviour.tweak(this);
     }
 
+    public static Properties tweak(BlockBehaviour behaviour, Properties properties) {
+        behaviour.tweak(properties);
+        return properties;
+    }
+
     @Override
     public BlockRenderType getRenderType(BlockState state) {
+        if (behaviour == null) return super.getRenderType(state);
+
         if (behaviour.has(BlockRenderTypeTrait.class))
             return behaviour.getRequired(BlockRenderTypeTrait.class).getBlockRenderType();
         return super.getRenderType(state);
@@ -59,12 +72,14 @@ public class BlockBase extends Block implements IHasBehaviour {
     @Nullable
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return behaviour.getRequired(TileEntityTrait.class).createTileEntity();
+        return behaviour.getRequired(TileEntityTrait.class).createTileEntity(this);
     }
 
     @Override
     @Deprecated
     public BlockState rotate(BlockState state, Rotation rotation) {
+        if (behaviour == null) return super.rotate(state, rotation);
+
         if (behaviour.has(BlockRotationTrait.class)) {
             BlockRotationTrait trait = behaviour.getRequired(BlockRotationTrait.class);
             return state.with(trait.getDirectionProperty(), rotation.rotate(state.get(trait.getDirectionProperty())));
@@ -75,6 +90,8 @@ public class BlockBase extends Block implements IHasBehaviour {
     @Override
     @Deprecated
     public BlockState mirror(BlockState state, Mirror mirrorIn) {
+        if (behaviour == null) return super.mirror(state, mirrorIn);
+
         if (behaviour.has(BlockRotationTrait.class)) {
             BlockRotationTrait trait = behaviour.getRequired(BlockRotationTrait.class);
             return state.rotate(mirrorIn.toRotation(state.get(trait.getDirectionProperty())));
@@ -82,14 +99,21 @@ public class BlockBase extends Block implements IHasBehaviour {
         return super.mirror(state, mirrorIn);
     }
 
+    public BlockState defineDefaultState() {
+        final BlockState[] def = {this.stateContainer.getBaseState()};
+        behaviour.get(BlockRotationTrait.class).ifPresent(t -> def[0] = t.defineDefaultState(def[0]));
+        return def[0];
+    }
+
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        if (behaviour.has(BlockRotationTrait.class)) {
-            BlockRotationTrait trait = behaviour.getRequired(BlockRotationTrait.class);
-            builder.add(trait.getDirectionProperty());
-        }
+        if (behaviour == null) return;
+
+        behaviour.get(BlockRotationTrait.class).ifPresent(t -> t.createBlockStateDefinition(builder));
     }
 
     public BlockState getStateForPlacement(BlockItemUseContext context) {
+        if (behaviour == null) return super.getStateForPlacement(context);
+
         if (behaviour.has(BlockRotationTrait.class)) {
             BlockRotationTrait trait = behaviour.getRequired(BlockRotationTrait.class);
             return trait.getStateForPlacement(this, context);
@@ -97,12 +121,12 @@ public class BlockBase extends Block implements IHasBehaviour {
         return super.getStateForPlacement(context);
     }
 
+
+
     @Override
     @SuppressWarnings("deprecation")
     public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (worldIn.isRemote()) {
-            return;
-        }
+        if (worldIn.isRemote()) return;
 
         if (behaviour.has(KeepNBTOnBreakTrait.class) && behaviour.getRequired(KeepNBTOnBreakTrait.class).isStoreNBTData()) {
             TileEntity tileEntity = worldIn.getTileEntity(pos);
@@ -113,9 +137,8 @@ public class BlockBase extends Block implements IHasBehaviour {
             compoundNBT.remove("z");
             itemStack.setTagInfo("BlockEntityTag", compoundNBT);
             InventoryHelper.spawnItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), itemStack);
+            super.onReplaced(state, worldIn, pos, newState, isMoving);
         }
-
-        super.onReplaced(state, worldIn, pos, newState, isMoving);
     }
 
     @Override

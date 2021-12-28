@@ -10,7 +10,6 @@ public class BlockPartialBehaviours {
             .requiredTraits(BlockTraits.ParticlesTrait.class)
             .requiredTraits(BlockTraits.MaterialTrait.class)
             .requiredTraits(BlockTraits.BlockRenderTypeTrait.class)
-            .requiredTraits(BlockTraits.BlockRotationTrait.class)
             .staticModel()
             .showBreakParticles(true)
             .partial();

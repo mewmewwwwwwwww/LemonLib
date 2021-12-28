@@ -31,7 +31,7 @@ minecraft {
     mappings channel: "snapshot", version: "${mapping}-${mcp_version}"
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 
-    //accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
     // Default run configurations.
     // These can be tweaked, removed, or duplicated as needed.
@@ -145,12 +145,25 @@ publishing {
     repositories {
         maven {
             url "https://mymavenrepo.com/repo/3pEVgYQm4PZO0Xtz9Za3/"
+            credentials {
+                username 'myMavenRepo'
+                password "${repoPassword}"
+            }
         }
     }
 
     publications {
         maven(MavenPublication) {
+            artifactId project.archivesBaseName
             from components.java
+
+            pom.withXml {
+                asNode().dependencies.dependency.each { dep ->
+                    if (dep.groupId.last().value().last() in ["net.minecraftforge", "mezz.jei"]) {
+                        assert dep.parent().remove(dep)
+                    }
+                }
+            }
         }
     }
 }

@@ -35,10 +35,6 @@ public class BlockBehaviour extends Behaviour {
             return this.with(new BlockTraits.BlockRotationTrait(rotation));
         }
 
-        public Builder property(Map<Property<?>, Object> propertyMap) {
-            return this.with(new BlockTraits.PropertyTrait(propertyMap));
-        }
-
         public Builder keepNBTOnBreak() {
             return this.with(new BlockTraits.KeepNBTOnBreakTrait(true));
         }
