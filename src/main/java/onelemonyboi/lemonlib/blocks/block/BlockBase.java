@@ -1,6 +1,5 @@
 package onelemonyboi.lemonlib.blocks.block;
 
-import lombok.var;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -18,6 +17,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import onelemonyboi.lemonlib.trait.IHasProperty;
 import onelemonyboi.lemonlib.trait.behaviour.Behaviour;
 import onelemonyboi.lemonlib.trait.behaviour.IHasBehaviour;
 import onelemonyboi.lemonlib.trait.block.BlockBehaviour;
@@ -101,14 +101,14 @@ public class BlockBase extends Block implements IHasBehaviour {
 
     public BlockState defineDefaultState() {
         final BlockState[] def = {this.stateContainer.getBaseState()};
-        behaviour.get(BlockRotationTrait.class).ifPresent(t -> def[0] = t.defineDefaultState(def[0]));
+        behaviour.getRelated(IHasProperty.class).forEach(t -> def[0] = t.modifyDefaultState(def[0]));
         return def[0];
     }
 
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
         if (behaviour == null) return;
 
-        behaviour.get(BlockRotationTrait.class).ifPresent(t -> t.createBlockStateDefinition(builder));
+        behaviour.getRelated(IHasProperty.class).forEach(t -> t.createBlockStateDefinition(builder));
     }
 
     public BlockState getStateForPlacement(BlockItemUseContext context) {

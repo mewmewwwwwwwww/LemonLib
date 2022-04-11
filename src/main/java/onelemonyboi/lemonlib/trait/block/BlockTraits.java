@@ -13,6 +13,7 @@ import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import onelemonyboi.lemonlib.trait.IHasProperty;
 import onelemonyboi.lemonlib.trait.Trait;
 
 import java.util.function.Function;
@@ -54,7 +55,7 @@ public class BlockTraits {
         private final boolean storeNBTData;
     }
     
-    public static class BlockRotationTrait extends Trait {
+    public static class BlockRotationTrait extends Trait implements IHasProperty {
 
     	protected final RotationType rotationType;
 
@@ -80,7 +81,7 @@ public class BlockTraits {
             builder.add(rotationType.direction);
         }
 
-        public BlockState defineDefaultState(BlockState state) {
+        public BlockState modifyDefaultState(BlockState state) {
     	    return state.with(rotationType.direction, rotationType.defaultDir);
         }
 

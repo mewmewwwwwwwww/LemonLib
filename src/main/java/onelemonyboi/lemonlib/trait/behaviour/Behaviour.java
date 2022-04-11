@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 public class Behaviour {
 
@@ -49,6 +50,13 @@ public class Behaviour {
      */
     public <T extends Trait> Optional<T> get(Class<T> trait) {
         return (Optional<T>) Optional.ofNullable(traits.get(trait.hashCode()));
+    }
+
+    /**
+     * Gets all traits that extend/implement specified class in this behaviour.
+     */
+    public <T> Stream<T> getRelated(Class<T> clazz) {
+        return traits.values().stream().filter(clazz::isInstance).map(clazz::cast);
     }
 
     /**

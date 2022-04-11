@@ -144,10 +144,10 @@ jar.finalizedBy('reobfJar')
 publishing {
     repositories {
         maven {
-            url "https://mymavenrepo.com/repo/3pEVgYQm4PZO0Xtz9Za3/"
+            url "https://maven.explodingcreeper.me"
             credentials {
-                username 'myMavenRepo'
-                password "${repoPassword}"
+                username System.getenv("MAVEN_USER")
+                password System.getenv("MAVEN_PASSWORD")
             }
         }
     }
