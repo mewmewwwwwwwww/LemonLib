@@ -56,12 +56,12 @@ public class BlockBase extends Block implements IHasBehaviour {
 
     @Override
     public boolean addDestroyEffects(BlockState state, World world, BlockPos pos, ParticleManager manager) {
-        return !behaviour.getRequired(ParticlesTrait.class).isShowBreakParticles();
+        return behaviour.has(ParticlesTrait.class) && !behaviour.getRequired(ParticlesTrait.class).isShowBreakParticles();
     }
 
     @Override
     public boolean addHitEffects(BlockState state, World world, RayTraceResult target, ParticleManager manager) {
-        return !behaviour.getRequired(ParticlesTrait.class).isShowBreakParticles();
+        return behaviour.has(ParticlesTrait.class) && !behaviour.getRequired(ParticlesTrait.class).isShowBreakParticles();
     }
 
     @Override
