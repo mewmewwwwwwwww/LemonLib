@@ -121,26 +121,6 @@ public class BlockBase extends Block implements IHasBehaviour {
         return super.getStateForPlacement(context);
     }
 
-
-
-    @Override
-    @SuppressWarnings("deprecation")
-    public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (worldIn.isRemote()) return;
-
-        if (behaviour.has(KeepNBTOnBreakTrait.class) && behaviour.getRequired(KeepNBTOnBreakTrait.class).isStoreNBTData()) {
-            TileEntity tileEntity = worldIn.getTileEntity(pos);
-            ItemStack itemStack = new ItemStack(this);
-            CompoundNBT compoundNBT = tileEntity.write(new CompoundNBT());
-            compoundNBT.remove("x");
-            compoundNBT.remove("y");
-            compoundNBT.remove("z");
-            itemStack.setTagInfo("BlockEntityTag", compoundNBT);
-            InventoryHelper.spawnItemStack(worldIn, pos.getX(), pos.getY(), pos.getZ(), itemStack);
-            super.onReplaced(state, worldIn, pos, newState, isMoving);
-        }
-    }
-
     @Override
     public Behaviour getBehaviour() {
         return behaviour;

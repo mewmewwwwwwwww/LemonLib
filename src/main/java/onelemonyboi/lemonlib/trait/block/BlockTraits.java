@@ -49,11 +49,6 @@ public class BlockTraits {
     public static class BlockRenderTypeTrait extends Trait {
         private final BlockRenderType blockRenderType;
     }
-
-    @Data
-    public static class KeepNBTOnBreakTrait extends Trait {
-        private final boolean storeNBTData;
-    }
     
     public static class BlockRotationTrait extends Trait implements IHasProperty {
 

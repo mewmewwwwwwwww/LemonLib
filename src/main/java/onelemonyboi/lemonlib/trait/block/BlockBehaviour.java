@@ -34,9 +34,5 @@ public class BlockBehaviour extends Behaviour {
         public Builder rotation(BlockTraits.RotationType rotation) {
             return this.with(new BlockTraits.BlockRotationTrait(rotation));
         }
-
-        public Builder keepNBTOnBreak() {
-            return this.with(new BlockTraits.KeepNBTOnBreakTrait(true));
-        }
     }
 }
