@@ -139,7 +139,7 @@ jar.finalizedBy('reobfJar')
 publishing {
     repositories {
         maven {
-            url "https://maven.explodingcreeper.me"
+            url "https://maven.explodingcreeper.me/releases"
             credentials {
                 username System.getenv("MAVEN_USER")
                 password System.getenv("MAVEN_PASSWORD")
