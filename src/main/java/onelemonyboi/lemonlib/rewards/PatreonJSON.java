@@ -21,7 +21,7 @@ public class PatreonJSON {
     }
 
     private static void load() {
-        Minecraft.getInstance().runImmediately(() -> {
+        Minecraft.getInstance().executeBlocking(() -> {
             Gson jsonParser = new Gson();
             try {
                 URL url = new URL("https://raw.githubusercontent.com/OneLemonyBoi/LemonLib/main/supporters.json");

@@ -8,6 +8,9 @@ import net.minecraft.item.Items;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fml.client.gui.widget.ExtendedButton;
 
+import net.minecraft.client.gui.widget.button.Button.IPressable;
+import net.minecraft.client.gui.widget.button.Button.ITooltip;
+
 public class ItemStackButton extends ExtendedButton {
     public Item item;
     public int xPos;
@@ -41,12 +44,12 @@ public class ItemStackButton extends ExtendedButton {
     @Override
     protected void renderBg(MatrixStack matrixStack, Minecraft minecraft, int mouseX, int mouseY) {
         super.renderBg(matrixStack, minecraft, mouseX, mouseY);
-        Minecraft.getInstance().getItemRenderer().renderItemIntoGUI(new ItemStack(item), xPos, yPos);
+        Minecraft.getInstance().getItemRenderer().renderGuiItem(new ItemStack(item), xPos, yPos);
     }
 
     @Override
-    public void renderWidget(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        super.renderWidget(matrixStack, mouseX, mouseY, partialTicks);
+    public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        super.renderButton(matrixStack, mouseX, mouseY, partialTicks);
         if (this.isHovered()) {
             this.renderToolTip(matrixStack, mouseX, mouseY);
         }

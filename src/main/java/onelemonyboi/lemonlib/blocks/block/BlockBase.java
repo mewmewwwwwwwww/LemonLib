@@ -25,6 +25,8 @@ import onelemonyboi.lemonlib.trait.block.BlockTraits.*;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.block.AbstractBlock.Properties;
+
 public class BlockBase extends Block implements IHasBehaviour {
     BlockBehaviour behaviour;
 
@@ -33,9 +35,9 @@ public class BlockBase extends Block implements IHasBehaviour {
         this.behaviour = behaviour;
 
         StateContainer.Builder<Block, BlockState> builder = new StateContainer.Builder<>(this);
-        this.fillStateContainer(builder);
-        this.stateContainer = builder.createStateContainer(Block::getDefaultState, BlockState::new);
-        this.setDefaultState(defineDefaultState());
+        this.createBlockStateDefinition(builder);
+        this.stateDefinition = builder.create(Block::defaultBlockState, BlockState::new);
+        this.registerDefaultState(defineDefaultState());
 
         behaviour.tweak(this);
     }
@@ -46,12 +48,12 @@ public class BlockBase extends Block implements IHasBehaviour {
     }
 
     @Override
-    public BlockRenderType getRenderType(BlockState state) {
-        if (behaviour == null) return super.getRenderType(state);
+    public BlockRenderType getRenderShape(BlockState state) {
+        if (behaviour == null) return super.getRenderShape(state);
 
         if (behaviour.has(BlockRenderTypeTrait.class))
             return behaviour.getRequired(BlockRenderTypeTrait.class).getBlockRenderType();
-        return super.getRenderType(state);
+        return super.getRenderShape(state);
     }
 
     @Override
@@ -82,7 +84,7 @@ public class BlockBase extends Block implements IHasBehaviour {
 
         if (behaviour.has(BlockRotationTrait.class)) {
             BlockRotationTrait trait = behaviour.getRequired(BlockRotationTrait.class);
-            return state.with(trait.getDirectionProperty(), rotation.rotate(state.get(trait.getDirectionProperty())));
+            return state.setValue(trait.getDirectionProperty(), rotation.rotate(state.getValue(trait.getDirectionProperty())));
         }
         return super.rotate(state, rotation);
     }
@@ -94,18 +96,18 @@ public class BlockBase extends Block implements IHasBehaviour {
 
         if (behaviour.has(BlockRotationTrait.class)) {
             BlockRotationTrait trait = behaviour.getRequired(BlockRotationTrait.class);
-            return state.rotate(mirrorIn.toRotation(state.get(trait.getDirectionProperty())));
+            return state.rotate(mirrorIn.getRotation(state.getValue(trait.getDirectionProperty())));
         }
         return super.mirror(state, mirrorIn);
     }
 
     public BlockState defineDefaultState() {
-        final BlockState[] def = {this.stateContainer.getBaseState()};
+        final BlockState[] def = {this.stateDefinition.any()};
         behaviour.getRelated(IHasProperty.class).forEach(t -> def[0] = t.modifyDefaultState(def[0]));
         return def[0];
     }
 
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
         if (behaviour == null) return;
 
         behaviour.getRelated(IHasProperty.class).forEach(t -> t.createBlockStateDefinition(builder));

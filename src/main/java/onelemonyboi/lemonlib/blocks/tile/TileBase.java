@@ -40,7 +40,7 @@ public class TileBase extends TileEntity implements IHasBehaviour {
 
     @SneakyThrows
     @Override
-    public CompoundNBT write(CompoundNBT nbt) {
+    public CompoundNBT save(CompoundNBT nbt) {
         if (behaviour.has(TileTraits.PowerTrait.class)) {
             behaviour.getRequired(TileTraits.PowerTrait.class).getEnergyStorage().write(nbt);
         }
@@ -61,12 +61,12 @@ public class TileBase extends TileEntity implements IHasBehaviour {
             f.setAccessible(false);
         }
 
-        return super.write(nbt);
+        return super.save(nbt);
     }
 
     @SneakyThrows
     @Override
-    public void read(BlockState state, CompoundNBT nbt) {
+    public void load(BlockState state, CompoundNBT nbt) {
         if (behaviour.has(TileTraits.PowerTrait.class)) {
             behaviour.getRequired(TileTraits.PowerTrait.class).getEnergyStorage().read(nbt);
         }
@@ -86,7 +86,7 @@ public class TileBase extends TileEntity implements IHasBehaviour {
             f.setAccessible(false);
         }
 
-        super.read(state, nbt);
+        super.load(state, nbt);
     }
 
     @Nonnull
@@ -102,8 +102,8 @@ public class TileBase extends TileEntity implements IHasBehaviour {
     }
 
     @Override
-    public void remove() {
-        super.remove();
+    public void setRemoved() {
+        super.setRemoved();
         if (behaviour.has(TileTraits.PowerTrait.class))
             behaviour.getRequired(TileTraits.PowerTrait.class).getLazyEnergyStorage().invalidate();
         if (behaviour.has(TileTraits.ItemTrait.class))
@@ -113,30 +113,30 @@ public class TileBase extends TileEntity implements IHasBehaviour {
     @Nullable
     @Override
     public SUpdateTileEntityPacket getUpdatePacket() {
-        return new SUpdateTileEntityPacket(this.getPos(), 514, getUpdateTag());
+        return new SUpdateTileEntityPacket(this.getBlockPos(), 514, getUpdateTag());
     }
 
     @Override
     public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
-        this.read(world.getBlockState(pkt.getPos()), pkt.getNbtCompound());
+        this.load(level.getBlockState(pkt.getPos()), pkt.getTag());
     }
 
     @Override
     public void handleUpdateTag(BlockState state, CompoundNBT tag) {
-        this.read(state, tag);
+        this.load(state, tag);
     }
 
     @Override
     public CompoundNBT getUpdateTag() {
-        return this.write(new CompoundNBT());
+        return this.save(new CompoundNBT());
     }
 
     public void sendToClients() {
-        if (!world.isRemote) {
-            ServerWorld world = (ServerWorld) this.getWorld();
-            Stream<ServerPlayerEntity> entities = world.getChunkProvider().chunkManager.getTrackingPlayers(new ChunkPos(this.getPos()), false);
+        if (!level.isClientSide) {
+            ServerWorld world = (ServerWorld) this.getLevel();
+            Stream<ServerPlayerEntity> entities = world.getChunkSource().chunkMap.getPlayers(new ChunkPos(this.getBlockPos()), false);
             SUpdateTileEntityPacket packet = this.getUpdatePacket();
-            entities.forEach(e -> e.connection.sendPacket(packet));
+            entities.forEach(e -> e.connection.send(packet));
         }
     }
 

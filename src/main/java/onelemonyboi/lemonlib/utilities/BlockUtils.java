@@ -7,8 +7,8 @@ import org.apache.commons.lang3.tuple.Triple;
 
 public class BlockUtils {
     public static Triple<Double, Double, Double> getRelativePosition(BlockPos pos, BlockRayTraceResult hit) {
-        Vector3d vector = hit.getHitVec();
-        Triple<Double, Double, Double> triple = Triple.of(vector.getX() - pos.getX(), vector.getY() - pos.getY(), vector.getZ() - pos.getZ());
+        Vector3d vector = hit.getLocation();
+        Triple<Double, Double, Double> triple = Triple.of(vector.x() - pos.getX(), vector.y() - pos.getY(), vector.z() - pos.getZ());
         return triple;
     }
 

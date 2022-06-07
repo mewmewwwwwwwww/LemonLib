@@ -62,14 +62,14 @@ public class BlockTraits {
         	Direction dir;
         	switch (rotationType) {
                 case XZ:
-                    dir = context.getPlacementHorizontalFacing().getOpposite();
+                    dir = context.getHorizontalDirection().getOpposite();
                     break;
                 case XYZ:
                 default:
-                    dir = context.getPlayer().isSneaking() ? context.getNearestLookingDirection().getOpposite() : context.getNearestLookingDirection();
+                    dir = context.getPlayer().isShiftKeyDown() ? context.getNearestLookingDirection().getOpposite() : context.getNearestLookingDirection();
             }
 
-        	return block.getDefaultState().with(rotationType.direction, dir);
+        	return block.defaultBlockState().setValue(rotationType.direction, dir);
         }
 
         public void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
@@ -77,7 +77,7 @@ public class BlockTraits {
         }
 
         public BlockState modifyDefaultState(BlockState state) {
-    	    return state.with(rotationType.direction, rotationType.defaultDir);
+    	    return state.setValue(rotationType.direction, rotationType.defaultDir);
         }
 
         public DirectionProperty getDirectionProperty() {

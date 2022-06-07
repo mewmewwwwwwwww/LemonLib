@@ -4,6 +4,9 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fml.client.gui.widget.ExtendedButton;
 
+import net.minecraft.client.gui.widget.button.Button.IPressable;
+import net.minecraft.client.gui.widget.button.Button.ITooltip;
+
 public class InvisibleButton extends ExtendedButton {
     public int xPos;
     public int yPos;
@@ -24,7 +27,7 @@ public class InvisibleButton extends ExtendedButton {
     }
 
     @Override
-    public void renderWidget(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         if (this.isHovered()) {
             this.renderToolTip(matrixStack, mouseX, mouseY);
         }

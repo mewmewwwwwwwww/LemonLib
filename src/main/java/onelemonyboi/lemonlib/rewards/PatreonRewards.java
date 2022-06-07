@@ -89,11 +89,11 @@ public class PatreonRewards {
                     iFormattableTextComponent = formattingSetter(name, nonBinaryArray);
                     break;
                 default:
-                    iFormattableTextComponent.setStyle(iFormattableTextComponent.getStyle().setColor(color(type)));
+                    iFormattableTextComponent.setStyle(iFormattableTextComponent.getStyle().withColor(color(type)));
                     break;
             }
             java.util.Collection<IFormattableTextComponent> suffixes = new java.util.LinkedList<>();
-            iFormattableTextComponent = suffixes.stream().reduce(iFormattableTextComponent, IFormattableTextComponent::appendSibling);
+            iFormattableTextComponent = suffixes.stream().reduce(iFormattableTextComponent, IFormattableTextComponent::append);
             event.player.setCustomName(iFormattableTextComponent);
             ObfuscationReflectionHelper.setPrivateValue(PlayerEntity.class, event.player, iFormattableTextComponent, "displayname");
         }
@@ -103,14 +103,14 @@ public class PatreonRewards {
         IFormattableTextComponent iFormattableTextComponent = new StringTextComponent("");
         int count = 0;
         for (Character c : name.toCharArray()) {
-            IFormattableTextComponent tempFTC = new StringTextComponent(c.toString()).setStyle(iFormattableTextComponent.getStyle().setColor(colors[count]));
-            iFormattableTextComponent.appendSibling(tempFTC);
+            IFormattableTextComponent tempFTC = new StringTextComponent(c.toString()).setStyle(iFormattableTextComponent.getStyle().withColor(colors[count]));
+            iFormattableTextComponent.append(tempFTC);
             count = count == colors.length - 1 ? 0 : count + 1;
         }
         return iFormattableTextComponent;
     }
 
     public static Color color(String string) {
-        return Color.fromHex("#".concat(string));
+        return Color.parseColor("#".concat(string));
     }
 }
