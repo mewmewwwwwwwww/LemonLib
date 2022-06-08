@@ -1,18 +1,16 @@
 package onelemonyboi.lemonlib.trait.block;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderType;
-import net.minecraft.state.Property;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import onelemonyboi.lemonlib.trait.behaviour.Behaviour;
 
-import java.util.Map;
 import java.util.function.Function;
 
-public class BlockBehaviour extends Behaviour {
-    public static class Builder extends Behaviour.Builder<BlockBehaviour, Builder> {
+public class BlockBehavior extends Behaviour {
+    public static class Builder extends Behaviour.Builder<BlockBehavior, Builder> {
         public Builder() {
-            super(new BlockBehaviour());
+            super(new BlockBehavior());
         }
 
         public Builder showBreakParticles(boolean showBreakParticles) {
@@ -20,14 +18,14 @@ public class BlockBehaviour extends Behaviour {
         }
 
         public Builder staticModel() {
-            return this.with(new BlockTraits.BlockRenderTypeTrait(BlockRenderType.MODEL));
+            return this.with(new BlockTraits.BlockRenderTypeTrait(RenderShape.MODEL));
         }
 
         public Builder animatedModel() {
-            return this.with(new BlockTraits.BlockRenderTypeTrait(BlockRenderType.ENTITYBLOCK_ANIMATED));
+            return this.with(new BlockTraits.BlockRenderTypeTrait(RenderShape.ENTITYBLOCK_ANIMATED));
         }
 
-        public <T extends TileEntity> Builder tileEntity(Function<Block, T> function) {
+        public <T extends BlockEntity> Builder tileEntity(Function<Block, T> function) {
             return this.with(new BlockTraits.TileEntityTrait<T>(function));
         }
 

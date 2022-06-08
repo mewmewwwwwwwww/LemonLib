@@ -1,16 +1,17 @@
 package onelemonyboi.lemonlib.blocks.tile;
 
 import lombok.SneakyThrows;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.Connection;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
@@ -24,23 +25,26 @@ import onelemonyboi.lemonlib.trait.tile.TileTraits;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
-import java.util.stream.Stream;
+import java.util.List;
 
 // Based On: TileEntityImpl by Ellpeck - https://github.com/Ellpeck/NaturesAura/blob/main/src/main/java/de/ellpeck/naturesaura/blocks/tiles/TileEntityImpl.java
 
-public class TileBase extends TileEntity implements IHasBehaviour {
+public class TileBase extends BlockEntity implements IHasBehaviour {
     TileBehaviour behaviour;
 
-    public TileBase(TileEntityType<?> tileEntityTypeIn, TileBehaviour behaviour) {
-        super(tileEntityTypeIn);
+    public TileBase(BlockEntityType<?> tileEntityTypeIn, BlockPos pos, BlockState state, TileBehaviour behaviour) {
+        super(tileEntityTypeIn, pos, state);
         this.behaviour = behaviour.copy();
 
         behaviour.tweak(this);
     }
 
-    @SneakyThrows
+    public TileBase(BlockEntityType<?> p_155228_, BlockPos p_155229_, BlockState p_155230_) {
+        super(p_155228_, p_155229_, p_155230_);
+    }
+
     @Override
-    public CompoundNBT save(CompoundNBT nbt) {
+    protected void saveAdditional(CompoundTag nbt) {
         if (behaviour.has(TileTraits.PowerTrait.class)) {
             behaviour.getRequired(TileTraits.PowerTrait.class).getEnergyStorage().write(nbt);
         }
@@ -51,7 +55,12 @@ public class TileBase extends TileEntity implements IHasBehaviour {
         for (Field f : this.getClass().getDeclaredFields()) {
             if (!f.isAnnotationPresent(SaveInNBT.class)) continue;
             f.setAccessible(true);
-            Object obj = f.get(this);
+            Object obj = null;
+            try {
+                obj = f.get(this);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
             String name = f.getAnnotation(SaveInNBT.class).key();
             String className = obj.getClass().getSimpleName();
             if (className.equals("String")) nbt.putString(name, (String) obj);
@@ -61,12 +70,12 @@ public class TileBase extends TileEntity implements IHasBehaviour {
             f.setAccessible(false);
         }
 
-        return super.save(nbt);
+        super.saveAdditional(nbt);
     }
 
     @SneakyThrows
     @Override
-    public void load(BlockState state, CompoundNBT nbt) {
+    public void load(CompoundTag nbt) {
         if (behaviour.has(TileTraits.PowerTrait.class)) {
             behaviour.getRequired(TileTraits.PowerTrait.class).getEnergyStorage().read(nbt);
         }
@@ -86,7 +95,7 @@ public class TileBase extends TileEntity implements IHasBehaviour {
             f.setAccessible(false);
         }
 
-        super.load(state, nbt);
+        super.load(nbt);
     }
 
     @Nonnull
@@ -112,30 +121,32 @@ public class TileBase extends TileEntity implements IHasBehaviour {
 
     @Nullable
     @Override
-    public SUpdateTileEntityPacket getUpdatePacket() {
-        return new SUpdateTileEntityPacket(this.getBlockPos(), 514, getUpdateTag());
+    public ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 
     @Override
-    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
-        this.load(level.getBlockState(pkt.getPos()), pkt.getTag());
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+        this.load(pkt.getTag());
     }
 
     @Override
-    public void handleUpdateTag(BlockState state, CompoundNBT tag) {
-        this.load(state, tag);
+    public void handleUpdateTag(CompoundTag tag) {
+        this.load(tag);
     }
 
     @Override
-    public CompoundNBT getUpdateTag() {
-        return this.save(new CompoundNBT());
+    public CompoundTag getUpdateTag() {
+        CompoundTag nbt = new CompoundTag();
+        this.saveAdditional(nbt);
+        return nbt;
     }
 
     public void sendToClients() {
         if (!level.isClientSide) {
-            ServerWorld world = (ServerWorld) this.getLevel();
-            Stream<ServerPlayerEntity> entities = world.getChunkSource().chunkMap.getPlayers(new ChunkPos(this.getBlockPos()), false);
-            SUpdateTileEntityPacket packet = this.getUpdatePacket();
+            ServerLevel world = (ServerLevel) this.getLevel();
+            List<ServerPlayer> entities = world.getChunkSource().chunkMap.getPlayers(new ChunkPos(this.getBlockPos()), false);
+            ClientboundBlockEntityDataPacket packet = this.getUpdatePacket();
             entities.forEach(e -> e.connection.send(packet));
         }
     }

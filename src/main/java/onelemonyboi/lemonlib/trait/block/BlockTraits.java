@@ -3,16 +3,16 @@ package onelemonyboi.lemonlib.trait.block;
 import lombok.Data;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderType;
-import net.minecraft.block.BlockState;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.state.DirectionProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import onelemonyboi.lemonlib.trait.IHasProperty;
 import onelemonyboi.lemonlib.trait.Trait;
 
@@ -22,12 +22,12 @@ import java.util.function.Function;
 public class BlockTraits {
     public abstract static class MaterialTrait extends Trait {
         protected MaterialTrait() {
-            this.addTweaker(AbstractBlock.Properties.class, this::tweakProperties);
+            this.addTweaker(BlockBehaviour.Properties.class, this::tweakProperties);
         }
-        protected abstract void tweakProperties(AbstractBlock.Properties properties);
+        protected abstract void tweakProperties(BlockBehaviour.Properties properties);
     }
 
-    public static class TileEntityTrait<T extends TileEntity> extends Trait {
+    public static class TileEntityTrait<T extends BlockEntity> extends Trait {
         private final Function<Block, T> function;
 
         public TileEntityTrait(Function<Block, T> function) {
@@ -47,7 +47,7 @@ public class BlockTraits {
 
     @Data
     public static class BlockRenderTypeTrait extends Trait {
-        private final BlockRenderType blockRenderType;
+        private final RenderShape blockRenderType;
     }
     
     public static class BlockRotationTrait extends Trait implements IHasProperty {
@@ -58,7 +58,7 @@ public class BlockTraits {
     		this.rotationType = rotationType;
     	}
 
-        public BlockState getStateForPlacement(Block block, BlockItemUseContext context) {
+        public BlockState getStateForPlacement(Block block, BlockPlaceContext context) {
         	Direction dir;
         	switch (rotationType) {
                 case XZ:
@@ -72,7 +72,7 @@ public class BlockTraits {
         	return block.defaultBlockState().setValue(rotationType.direction, dir);
         }
 
-        public void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+        public void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
             builder.add(rotationType.direction);
         }
 

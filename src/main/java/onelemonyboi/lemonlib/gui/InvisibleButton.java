@@ -1,25 +1,22 @@
 package onelemonyboi.lemonlib.gui;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.fml.client.gui.widget.ExtendedButton;
-
-import net.minecraft.client.gui.widget.button.Button.IPressable;
-import net.minecraft.client.gui.widget.button.Button.ITooltip;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraftforge.client.gui.widget.ExtendedButton;
 
 public class InvisibleButton extends ExtendedButton {
     public int xPos;
     public int yPos;
-    protected final ITooltip onTooltip;
+    protected final OnTooltip onTooltip;
 
-    public InvisibleButton(int xPos, int yPos, int width, int height, ITextComponent displayString, IPressable handler) {
+    public InvisibleButton(int xPos, int yPos, int width, int height, TextComponent displayString, OnPress handler) {
         super(xPos, yPos, width, height, displayString, handler);
         this.xPos = xPos;
         this.yPos = yPos;
         this.onTooltip = (button, matrixStack, mouseX, mouseY) -> {};
     }
 
-    public InvisibleButton(int xPos, int yPos, int width, int height, ITextComponent displayString, IPressable handler, ITooltip onTooltip) {
+    public InvisibleButton(int xPos, int yPos, int width, int height, TextComponent displayString, OnPress handler, OnTooltip onTooltip) {
         super(xPos, yPos, width, height, displayString, handler);
         this.xPos = xPos;
         this.yPos = yPos;
@@ -27,14 +24,14 @@ public class InvisibleButton extends ExtendedButton {
     }
 
     @Override
-    public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        if (this.isHovered()) {
+    public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        if (this.isHovered) {
             this.renderToolTip(matrixStack, mouseX, mouseY);
         }
     }
 
     @Override
-    public void renderToolTip(MatrixStack matrixStack, int mouseX, int mouseY) {
+    public void renderToolTip(PoseStack matrixStack, int mouseX, int mouseY) {
         this.onTooltip.onTooltip(this, matrixStack, mouseX, mouseY);
     }
 }

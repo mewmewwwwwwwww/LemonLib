@@ -3,10 +3,10 @@ package onelemonyboi.lemonlib.trait.block;
 import onelemonyboi.lemonlib.trait.behaviour.PartialBehaviour;
 
 public class BlockPartialBehaviours {
-    public static PartialBehaviour partialMaterial = new BlockBehaviour.Builder()
+    public static PartialBehaviour partialMaterial = new BlockBehavior.Builder()
             .partial();
 
-    public static PartialBehaviour partialBaseBlock = new BlockBehaviour.Builder().composeFrom(partialMaterial)
+    public static PartialBehaviour partialBaseBlock = new BlockBehavior.Builder().composeFrom(partialMaterial)
             .requiredTraits(BlockTraits.ParticlesTrait.class)
             .requiredTraits(BlockTraits.MaterialTrait.class)
             .requiredTraits(BlockTraits.BlockRenderTypeTrait.class)
@@ -14,7 +14,7 @@ public class BlockPartialBehaviours {
             .showBreakParticles(true)
             .partial();
 
-    public static PartialBehaviour partialTileBlock = new BlockBehaviour.Builder().composeFrom(partialBaseBlock)
+    public static PartialBehaviour partialTileBlock = new BlockBehavior.Builder().composeFrom(partialBaseBlock)
             .requiredTraits(BlockTraits.TileEntityTrait.class)
             .partial();
 }

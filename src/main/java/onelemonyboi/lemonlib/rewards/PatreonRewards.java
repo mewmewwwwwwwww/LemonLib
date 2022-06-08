@@ -1,15 +1,12 @@
 package onelemonyboi.lemonlib.rewards;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.text.Color;
-import net.minecraft.util.text.IFormattableTextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.TextColor;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 
 public class PatreonRewards {
     /**
@@ -50,17 +47,17 @@ public class PatreonRewards {
             return;
         }
 
-        Color[] rainbowArray = {color("E40300"), color("FF8D00"), color("FFEE00"), color("008121"), color("004BFF"), color("750088")};
-        Color[] transArray = {color("59D0FA"), color("F5ABBA"), color("FFFFFF"), color("F5ABBA"), color("59D0FA")};
-        Color[] biArray = {color("D70071"), color("9C4E98"), color("0035AA")};
-        Color[] lesbianArray = {color("D62A00"), color("FF9B56"), color("FFFFFF"), color("D461A6"), color("A40062")};
-        Color[] asexualArray = {color("000000"), color("A4A4A4"), color("FFFFFF"), color("810081")};
-        Color[] panArray = {color("FF1C8D"), color("FFD900"), color("1CB2FF")};
-        Color[] queerArray = {color("B77EDD"), color("FFFFFF"), color("48821D")};
-        Color[] nonBinaryArray = {color("FFF530"), color("FFFFFF"), color("9E58D2"), color("282828")};
+        TextColor[] rainbowArray = {color("E40300"), color("FF8D00"), color("FFEE00"), color("008121"), color("004BFF"), color("750088")};
+        TextColor[] transArray = {color("59D0FA"), color("F5ABBA"), color("FFFFFF"), color("F5ABBA"), color("59D0FA")};
+        TextColor[] biArray = {color("D70071"), color("9C4E98"), color("0035AA")};
+        TextColor[] lesbianArray = {color("D62A00"), color("FF9B56"), color("FFFFFF"), color("D461A6"), color("A40062")};
+        TextColor[] asexualArray = {color("000000"), color("A4A4A4"), color("FFFFFF"), color("810081")};
+        TextColor[] panArray = {color("FF1C8D"), color("FFD900"), color("1CB2FF")};
+        TextColor[] queerArray = {color("B77EDD"), color("FFFFFF"), color("48821D")};
+        TextColor[] nonBinaryArray = {color("FFF530"), color("FFFFFF"), color("9E58D2"), color("282828")};
 
         String name = event.player.getGameProfile().getName();
-        IFormattableTextComponent iFormattableTextComponent = new StringTextComponent(name);
+        MutableComponent iFormattableTextComponent = new TextComponent(name);
         String type = PatreonJSON.REWARD_MAP.getOrDefault(name, "No Value");
         if (!type.equals("No Value")) {
             switch (type) {
@@ -92,25 +89,25 @@ public class PatreonRewards {
                     iFormattableTextComponent.setStyle(iFormattableTextComponent.getStyle().withColor(color(type)));
                     break;
             }
-            java.util.Collection<IFormattableTextComponent> suffixes = new java.util.LinkedList<>();
-            iFormattableTextComponent = suffixes.stream().reduce(iFormattableTextComponent, IFormattableTextComponent::append);
+            java.util.Collection<MutableComponent> suffixes = new java.util.LinkedList<>();
+            iFormattableTextComponent = suffixes.stream().reduce(iFormattableTextComponent, MutableComponent::append);
             event.player.setCustomName(iFormattableTextComponent);
-            ObfuscationReflectionHelper.setPrivateValue(PlayerEntity.class, event.player, iFormattableTextComponent, "displayname");
+            ObfuscationReflectionHelper.setPrivateValue(Player.class, event.player, iFormattableTextComponent, "displayname");
         }
     }
 
-    public static IFormattableTextComponent formattingSetter(String name, Color[] colors) {
-        IFormattableTextComponent iFormattableTextComponent = new StringTextComponent("");
+    public static MutableComponent formattingSetter(String name, TextColor[] colors) {
+        MutableComponent iFormattableTextComponent = new TextComponent("");
         int count = 0;
         for (Character c : name.toCharArray()) {
-            IFormattableTextComponent tempFTC = new StringTextComponent(c.toString()).setStyle(iFormattableTextComponent.getStyle().withColor(colors[count]));
+            MutableComponent tempFTC = new TextComponent(c.toString()).setStyle(iFormattableTextComponent.getStyle().withColor(colors[count]));
             iFormattableTextComponent.append(tempFTC);
             count = count == colors.length - 1 ? 0 : count + 1;
         }
         return iFormattableTextComponent;
     }
 
-    public static Color color(String string) {
-        return Color.parseColor("#".concat(string));
+    public static TextColor color(String string) {
+        return TextColor.parseColor("#".concat(string));
     }
 }

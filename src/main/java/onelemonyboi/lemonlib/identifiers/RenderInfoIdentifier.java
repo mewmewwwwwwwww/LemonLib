@@ -1,12 +1,9 @@
 package onelemonyboi.lemonlib.identifiers;
 
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.chat.TextComponent;
 
 import java.util.List;
 
 public interface RenderInfoIdentifier {
-    // Ya know, S P O O N
-    // TODO: MOVE TO LIB
-
-    public List<ITextComponent> getInfo();
+    public List<TextComponent> getInfo();
 }

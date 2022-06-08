@@ -1,54 +1,52 @@
 package onelemonyboi.lemonlib.blocks.block;
 
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderType;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.particle.ParticleManager;
-import net.minecraft.inventory.InventoryHelper;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.state.StateContainer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.Rotation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import lombok.SneakyThrows;
+import net.minecraft.client.particle.ParticleEngine;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.HitResult;
+import net.minecraftforge.client.IBlockRenderProperties;
 import onelemonyboi.lemonlib.trait.IHasProperty;
 import onelemonyboi.lemonlib.trait.behaviour.Behaviour;
 import onelemonyboi.lemonlib.trait.behaviour.IHasBehaviour;
-import onelemonyboi.lemonlib.trait.block.BlockBehaviour;
+import onelemonyboi.lemonlib.trait.block.BlockBehavior;
 import onelemonyboi.lemonlib.trait.block.BlockTraits.*;
+import org.apache.logging.log4j.core.util.ReflectionUtil;
 
 import javax.annotation.Nullable;
+import java.lang.reflect.Field;
+import java.util.function.Consumer;
 
-import net.minecraft.block.AbstractBlock.Properties;
+public class BlockBase extends Block implements IHasBehaviour, EntityBlock {
+    BlockBehavior behaviour;
 
-public class BlockBase extends Block implements IHasBehaviour {
-    BlockBehaviour behaviour;
-
-    public BlockBase(AbstractBlock.Properties properties, BlockBehaviour behaviour) {
+    @SneakyThrows
+    public BlockBase(BlockBehaviour.Properties properties, BlockBehavior behaviour) {
         super(tweak(behaviour, properties));
         this.behaviour = behaviour;
 
-        StateContainer.Builder<Block, BlockState> builder = new StateContainer.Builder<>(this);
+        StateDefinition.Builder<Block, BlockState> builder = new StateDefinition.Builder<>(this);
         this.createBlockStateDefinition(builder);
-        this.stateDefinition = builder.create(Block::defaultBlockState, BlockState::new);
+        ReflectionUtil.setFieldValue(BlockBase.class.getField("stateDefinition"), this, builder.create(Block::defaultBlockState, BlockState::new));
         this.registerDefaultState(defineDefaultState());
 
         behaviour.tweak(this);
     }
 
-    public static Properties tweak(BlockBehaviour behaviour, Properties properties) {
+    public static Properties tweak(BlockBehavior behaviour, Properties properties) {
         behaviour.tweak(properties);
         return properties;
     }
 
     @Override
-    public BlockRenderType getRenderShape(BlockState state) {
+    public RenderShape getRenderShape(BlockState state) {
         if (behaviour == null) return super.getRenderShape(state);
 
         if (behaviour.has(BlockRenderTypeTrait.class))
@@ -57,24 +55,23 @@ public class BlockBase extends Block implements IHasBehaviour {
     }
 
     @Override
-    public boolean addDestroyEffects(BlockState state, World world, BlockPos pos, ParticleManager manager) {
-        return behaviour.has(ParticlesTrait.class) && !behaviour.getRequired(ParticlesTrait.class).isShowBreakParticles();
+    public void initializeClient(Consumer<IBlockRenderProperties> consumer) {
+        consumer.accept(new IBlockRenderProperties() {
+            @Override
+            public boolean addHitEffects(BlockState state, Level level, HitResult target, ParticleEngine manager) {
+                return behaviour.has(ParticlesTrait.class) && !behaviour.getRequired(ParticlesTrait.class).isShowBreakParticles();
+            }
+
+            @Override
+            public boolean addDestroyEffects(BlockState state, Level Level, BlockPos pos, ParticleEngine manager) {
+                return behaviour.has(ParticlesTrait.class) && !behaviour.getRequired(ParticlesTrait.class).isShowBreakParticles();
+            }
+        });
     }
 
     @Override
-    public boolean addHitEffects(BlockState state, World world, RayTraceResult target, ParticleManager manager) {
-        return behaviour.has(ParticlesTrait.class) && !behaviour.getRequired(ParticlesTrait.class).isShowBreakParticles();
-    }
-
-    @Override
-    public boolean hasTileEntity(BlockState state) {
-        return behaviour.has(TileEntityTrait.class);
-    }
-
-    @Nullable
-    @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-        return behaviour.getRequired(TileEntityTrait.class).createTileEntity(this);
+    public BlockEntity newBlockEntity(BlockPos p_153215_, BlockState p_153216_) {
+        return behaviour.has(TileEntityTrait.class) ? behaviour.getRequired(TileEntityTrait.class).createTileEntity(this) : null;
     }
 
     @Override
@@ -107,13 +104,13 @@ public class BlockBase extends Block implements IHasBehaviour {
         return def[0];
     }
 
-    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         if (behaviour == null) return;
 
         behaviour.getRelated(IHasProperty.class).forEach(t -> t.createBlockStateDefinition(builder));
     }
 
-    public BlockState getStateForPlacement(BlockItemUseContext context) {
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
         if (behaviour == null) return super.getStateForPlacement(context);
 
         if (behaviour.has(BlockRotationTrait.class)) {

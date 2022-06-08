@@ -1,13 +1,13 @@
 package onelemonyboi.lemonlib.items;
 
-import net.minecraft.block.Block;
-import net.minecraft.item.BlockNamedItem;
-import net.minecraft.item.ItemGroup;
+import net.minecraft.world.item.ItemNameBlockItem;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.item.CreativeModeTab;
 
-import net.minecraft.item.Item.Properties;
+import net.minecraft.world.item.Item.Properties;
 
-public class ItemSeeds extends BlockNamedItem {
-    public ItemSeeds(Block crop, ItemGroup group)
+public class ItemSeeds extends ItemNameBlockItem {
+    public ItemSeeds(Block crop, CreativeModeTab group)
     {
         super(crop, new Properties().stacksTo(64).tab(group));
     }
