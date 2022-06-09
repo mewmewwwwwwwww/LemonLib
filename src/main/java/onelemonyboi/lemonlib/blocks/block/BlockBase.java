@@ -126,8 +126,8 @@ public class BlockBase extends Block implements IHasBehaviour, EntityBlock {
         return behaviour;
     }
 
-    @Nullable
-    protected static <E extends BlockEntity, A extends BlockEntity> BlockEntityTicker<A> createTickerHelper(BlockEntityType<A> p_152133_, BlockEntityType<E> p_152134_, BlockEntityTicker<? super E> p_152135_) {
-        return p_152134_ == p_152133_ ? (BlockEntityTicker<A>)p_152135_ : null;
+    protected static <E extends BlockEntity, A extends BlockEntity> BlockEntityTicker<A> createTickerHelper(Level level, BlockEntityType<A> in, BlockEntityType<E> desired, BlockEntityTicker<? super E> serverTick, BlockEntityTicker<? super E> clientTick) {
+        if (in != desired) return null;
+        return (BlockEntityTicker<A>) (level.isClientSide() ? clientTick : serverTick);
     }
 }
