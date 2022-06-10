@@ -35,7 +35,7 @@ public class BlockBase extends Block implements IHasBehaviour, EntityBlock {
 
         StateDefinition.Builder<Block, BlockState> builder = new StateDefinition.Builder<>(this);
         this.createBlockStateDefinition(builder);
-        ReflectionUtil.setFieldValue(BlockBase.class.getField("stateDefinition"), this, builder.create(Block::defaultBlockState, BlockState::new));
+        ReflectionUtil.setFieldValue(Block.class.getDeclaredField("stateDefinition"), this, builder.create(Block::defaultBlockState, BlockState::new));
         this.registerDefaultState(defineDefaultState());
 
         behaviour.tweak(this);
@@ -71,8 +71,8 @@ public class BlockBase extends Block implements IHasBehaviour, EntityBlock {
     }
 
     @Override
-    public BlockEntity newBlockEntity(BlockPos p_153215_, BlockState p_153216_) {
-        return behaviour.has(TileEntityTrait.class) ? behaviour.getRequired(TileEntityTrait.class).createTileEntity(this) : null;
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return behaviour.has(TileEntityTrait.class) ? behaviour.getRequired(TileEntityTrait.class).createTileEntity(this, pos, state) : null;
     }
 
     @Override

@@ -3,7 +3,9 @@ package onelemonyboi.lemonlib.trait.block;
 import lombok.Data;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.data.models.blockstates.PropertyDispatch;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -15,6 +17,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import onelemonyboi.lemonlib.trait.IHasProperty;
 import onelemonyboi.lemonlib.trait.Trait;
+import org.apache.commons.lang3.function.TriFunction;
 
 import java.util.function.Function;
 
@@ -28,15 +31,15 @@ public class BlockTraits {
     }
 
     public static class TileEntityTrait<T extends BlockEntity> extends Trait {
-        private final Function<Block, T> function;
+        private final TriFunction<Block, BlockPos, BlockState, T> function;
 
-        public TileEntityTrait(Function<Block, T> function) {
+        public TileEntityTrait(TriFunction<Block, BlockPos, BlockState, T> function) {
             this.function = function;
         }
 
         @SneakyThrows
-        public T createTileEntity(Block block) {
-            return function.apply(block);
+        public T createTileEntity(Block block, BlockPos pos, BlockState state) {
+            return function.apply(block, pos, state);
         }
     }
 
