@@ -14,6 +14,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.client.IBlockRenderProperties;
+import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import onelemonyboi.lemonlib.trait.IHasProperty;
 import onelemonyboi.lemonlib.trait.behaviour.Behaviour;
 import onelemonyboi.lemonlib.trait.behaviour.IHasBehaviour;
@@ -35,7 +36,7 @@ public class BlockBase extends Block implements IHasBehaviour, EntityBlock {
 
         StateDefinition.Builder<Block, BlockState> builder = new StateDefinition.Builder<>(this);
         this.createBlockStateDefinition(builder);
-        ReflectionUtil.setFieldValue(Block.class.getDeclaredField("stateDefinition"), this, builder.create(Block::defaultBlockState, BlockState::new));
+        ObfuscationReflectionHelper.findField(Block.class, "f_49792_").set(this, builder.create(Block::defaultBlockState, BlockState::new));
         this.registerDefaultState(defineDefaultState());
 
         behaviour.tweak(this);
